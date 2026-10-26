@@ -520,6 +520,25 @@
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
+        /* --- TOMBOL AKSI (CAPIT / LEPAS) --- */
+        .dpad-action-row {
+            width: 260px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dpad-btn.action-btn {
+            height: 56px;
+            font-size: 15px;
+            font-weight: 700;
+            gap: 8px;
+        }
+
+        .dpad-btn.action-btn i {
+            font-size: 16px;
+        }
+
         /* --- TEACHABLE MACHINE SECTION --- */
         .tm-container {
             display: flex;
@@ -759,6 +778,160 @@
             padding: 12px 14px;
         }
 
+        /* --- SWITCH THRESHOLD TEACHABLE MACHINE --- */
+        .tm-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+
+        .tm-switch-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tm-switch-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .tm-switch-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .switch {
+            position: relative;
+            width: 46px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .switch-slider {
+            position: absolute;
+            inset: 0;
+            background-color: var(--bg-card-hover);
+            border-radius: 20px;
+            transition: background-color 0.2s ease;
+            pointer-events: none;
+        }
+
+        .switch-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+
+        .switch input:checked + .switch-slider {
+            background-color: var(--accent-green);
+        }
+
+        .switch input:checked + .switch-slider::before {
+            transform: translateX(20px);
+        }
+
+        .switch input:focus-visible + .switch-slider {
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* --- PENGATURAN PERINTAH SECTION --- */
+        .cmd-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 720px;
+        }
+
+        .cmd-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cmd-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .cmd-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .cmd-name i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .cmd-default {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .cmd-input {
+            width: 220px;
+            max-width: 100%;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            transition: border-color 0.2s ease;
+            user-select: text;
+        }
+
+        .cmd-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .cmd-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .cmd-actions {
+            display: flex;
+            justify-content: flex-start;
+        }
+
         /* --- RIGHT NOTIFICATION / SYSTEM LOG PANEL --- */
         .log-panel {
             width: var(--log-width);
@@ -985,6 +1158,10 @@
                     <i class="fa-solid fa-brain"></i>
                     <span>Teachable Machine</span>
                 </div>
+                <div class="nav-item" data-target="cmd-section">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Pengaturan Perintah</span>
+                </div>
             </div>
 
             <!-- CREDITS FOOTER -->
@@ -1100,6 +1277,11 @@
                         <button class="dpad-btn" id="btn-right"><i class="fa-solid fa-chevron-right"></i></button>
                         <button class="dpad-btn" id="btn-down"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
+
+                    <div class="dpad-action-row">
+                        <button class="dpad-btn action-btn" id="btn-capit"><i class="fa-solid fa-hand-fist"></i><span>Capit</span></button>
+                        <button class="dpad-btn action-btn" id="btn-lepas"><i class="fa-solid fa-hand"></i><span>Lepas</span></button>
+                    </div>
                 </div>
             </section>
 
@@ -1126,6 +1308,17 @@
                         </div>
                     </div>
 
+                    <label class="tm-switch-row" for="tmThresholdToggle">
+                        <div class="tm-switch-text">
+                            <span class="tm-switch-title">Batas Keyakinan 85%</span>
+                            <span class="tm-switch-desc" id="tmThresholdDesc"></span>
+                        </div>
+                        <div class="switch">
+                            <input type="checkbox" id="tmThresholdToggle" checked>
+                            <span class="switch-slider"></span>
+                        </div>
+                    </label>
+
                     <div class="tm-preview-row">
                         <div class="tm-webcam-box">
                             <div class="tm-webcam-title">
@@ -1150,6 +1343,73 @@
                                 <div class="tm-placeholder">Belum ada model yang dimuat</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: PENGATURAN PERINTAH -->
+            <section id="cmd-section" class="view-section">
+                <div class="section-header">
+                    <h1 class="section-title">Pengaturan Perintah</h1>
+                    <p class="section-subtitle">Ubah data yang dikirim ke Micro:bit saat tombol ditekan. Kosongkan kolom untuk kembali ke data default.</p>
+                </div>
+
+                <div class="cmd-container">
+                    <div class="cmd-list">
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-chevron-up"></i>
+                                <span>Maju <span class="cmd-default">(default: up)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="up" data-label="Maju" placeholder="up" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-chevron-down"></i>
+                                <span>Mundur <span class="cmd-default">(default: down)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="down" data-label="Mundur" placeholder="down" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-chevron-left"></i>
+                                <span>Kiri <span class="cmd-default">(default: left)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="left" data-label="Kiri" placeholder="left" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-chevron-right"></i>
+                                <span>Kanan <span class="cmd-default">(default: right)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="right" data-label="Kanan" placeholder="right" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-hand-fist"></i>
+                                <span>Capit <span class="cmd-default">(default: capit)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="capit" data-label="Capit" placeholder="capit" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="cmd-row">
+                            <div class="cmd-name">
+                                <i class="fa-solid fa-hand"></i>
+                                <span>Lepas <span class="cmd-default">(default: lepas)</span></span>
+                            </div>
+                            <input type="text" class="cmd-input" data-key="lepas" data-label="Lepas" placeholder="lepas" maxlength="18" autocomplete="off" spellcheck="false">
+                        </div>
+                    </div>
+
+                    <div class="cmd-actions">
+                        <button class="btn-tm" id="btnCmdReset">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset ke Default</span>
+                        </button>
+                    </div>
+
+                    <div class="tm-hint">
+                        <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>
+                        Perubahan langsung dipakai dan tersimpan di browser ini. Data "stop" yang dikirim saat tombol arah dilepas tidak berubah. Maksimal 18 karakter agar muat dalam satu paket Bluetooth Micro:bit.
                     </div>
                 </div>
             </section>
@@ -1435,6 +1695,106 @@
             }
         }
 
+        // ============================================================
+        // PENGATURAN: PERINTAH KUSTOM & TOGGLE THRESHOLD
+        // ============================================================
+        const DEFAULT_COMMANDS = {
+            up: 'up',
+            down: 'down',
+            left: 'left',
+            right: 'right',
+            capit: 'capit',
+            lepas: 'lepas'
+        };
+        const SETTINGS_KEY = 'microbitWebSettings';
+
+        let customCommands = { ...DEFAULT_COMMANDS };
+        let tmThresholdEnabled = true; // true = kirim hanya jika confidence >= 85%
+
+        const cmdInputs = document.querySelectorAll('.cmd-input');
+        const btnCmdReset = document.getElementById('btnCmdReset');
+        const tmThresholdToggle = document.getElementById('tmThresholdToggle');
+        const tmThresholdDesc = document.getElementById('tmThresholdDesc');
+
+        function loadSettings() {
+            try {
+                const raw = localStorage.getItem(SETTINGS_KEY);
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                if (saved.commands) {
+                    Object.keys(DEFAULT_COMMANDS).forEach(key => {
+                        const v = saved.commands[key];
+                        if (typeof v === 'string' && v.trim()) customCommands[key] = v.trim();
+                    });
+                }
+                if (typeof saved.thresholdEnabled === 'boolean') {
+                    tmThresholdEnabled = saved.thresholdEnabled;
+                }
+            } catch (e) {
+                // Penyimpanan tidak tersedia / data rusak: pakai nilai default
+            }
+        }
+
+        function saveSettings() {
+            try {
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+                    commands: customCommands,
+                    thresholdEnabled: tmThresholdEnabled
+                }));
+            } catch (e) {
+                // Abaikan jika penyimpanan tidak tersedia
+            }
+        }
+
+        // Ambil data yang akan dikirim untuk sebuah tombol (kosong = default)
+        function getCommand(key) {
+            return customCommands[key] || DEFAULT_COMMANDS[key];
+        }
+
+        function updateThresholdDesc() {
+            tmThresholdDesc.innerText = tmThresholdEnabled
+                ? 'Aktif: data hanya dikirim jika keyakinan prediksi 85% atau lebih.'
+                : 'Nonaktif: data dikirim setiap kali kelas teratas berubah, berapa pun keyakinannya.';
+        }
+
+        loadSettings();
+
+        // Isi input perintah dengan nilai tersimpan
+        cmdInputs.forEach(input => {
+            const key = input.dataset.key;
+            input.value = getCommand(key);
+
+            // Langsung dipakai saat mengetik
+            input.addEventListener('input', () => {
+                customCommands[key] = input.value.trim() || DEFAULT_COMMANDS[key];
+                saveSettings();
+            });
+
+            // Catat ke log saat selesai mengubah
+            input.addEventListener('change', () => {
+                if (!input.value.trim()) input.value = DEFAULT_COMMANDS[key];
+                addLog(`Perintah tombol ${input.dataset.label} diubah menjadi: ${getCommand(key)}`, 'info');
+            });
+        });
+
+        btnCmdReset.addEventListener('click', () => {
+            customCommands = { ...DEFAULT_COMMANDS };
+            cmdInputs.forEach(input => { input.value = DEFAULT_COMMANDS[input.dataset.key]; });
+            saveSettings();
+            addLog('Semua perintah dikembalikan ke default.', 'info');
+        });
+
+        // Toggle threshold Teachable Machine
+        tmThresholdToggle.checked = tmThresholdEnabled;
+        updateThresholdDesc();
+
+        tmThresholdToggle.addEventListener('change', () => {
+            tmThresholdEnabled = tmThresholdToggle.checked;
+            updateThresholdDesc();
+            saveSettings();
+            addLog(`Batas keyakinan 85% ${tmThresholdEnabled ? 'diaktifkan' : 'dinonaktifkan'}.`, 'info');
+        });
+
         // --- D-PAD LOGIC (TOUCH / CLICK ONLY) ---
         const dpadButtons = [
             { id: 'btn-up', command: 'up' },
@@ -1452,7 +1812,7 @@
                 if (activeDirection !== btn.command) {
                     activeDirection = btn.command;
                     el.classList.add('active-key');
-                    sendData(btn.command);
+                    sendData(getCommand(btn.command));
                 }
             };
 
@@ -1472,6 +1832,18 @@
             // Touch Events
             el.addEventListener('touchstart', (e) => { e.preventDefault(); handlePress(); });
             el.addEventListener('touchend', (e) => { e.preventDefault(); handleRelease(); });
+        });
+
+        // --- TOMBOL CAPIT / LEPAS ---
+        // Hanya mengirim data saat diklik. Saat dilepas tidak mengirim apa pun.
+        // Data "lepas" baru terkirim jika tombol Lepas diklik (dan sebaliknya).
+        [
+            { id: 'btn-capit', command: 'capit' },
+            { id: 'btn-lepas', command: 'lepas' }
+        ].forEach(btn => {
+            document.getElementById(btn.id).addEventListener('click', () => {
+                sendData(getCommand(btn.command));
+            });
         });
 
         // ============================================================
@@ -1624,8 +1996,9 @@
 
             // Kirim class terbaik hanya jika confidence >= 85% DAN berbeda dari terakhir
             // Jika di bawah 85% maka tidak mengirim apa pun (tetap pada data sebelumnya)
+            // Jika threshold dimatikan lewat toggle, batas 85% diabaikan (tetap hanya kirim jika berbeda dari terakhir)
             const top = sorted[0];
-            if (top && top.probability >= TM_CONFIDENCE_THRESHOLD) {
+            if (top && (!tmThresholdEnabled || top.probability >= TM_CONFIDENCE_THRESHOLD)) {
                 if (top.className !== tmLastSentClass) {
                     tmLastSentClass = top.className;
                     sendData(top.className);
