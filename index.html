@@ -928,6 +928,34 @@
             box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
         }
 
+        #pk-webcam-container {
+            width: 280px;
+            height: 280px;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #pk-webcam-container canvas,
+        #pk-webcam-container video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        #pk-label-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #pkModelUrl { user-select: text; }
+
         @media (prefers-reduced-motion: reduce) {
             .pk-slot.occupied .pk-car { animation: none; }
         }
@@ -1335,7 +1363,7 @@
             <section id="parking-section" class="view-section">
                 <div class="section-header">
                     <h1 class="section-title">Smart Parking</h1>
-                    <p class="section-subtitle">Pantau tiga slot parkir secara real-time dan kontrol palang parkir lewat Micro:bit.</p>
+                    <p class="section-subtitle">Pantau tiga slot parkir secara real-time, deteksi mobil dengan kamera Teachable Machine, dan kontrol palang parkir lewat Micro:bit.</p>
                 </div>
 
                 <div class="dashboard-grid">
@@ -1447,6 +1475,55 @@
 
                 <div class="panel-box">
                     <div class="panel-box-title">
+                        <i class="fa-solid fa-camera" style="color: var(--accent-cyan);"></i>
+                        Deteksi Mobil dengan Kamera
+                    </div>
+                    <div class="tm-container" style="max-width: none;">
+                        <div class="tm-input-group">
+                            <label class="tm-label" for="pkModelUrl">Link Model Teachable Machine</label>
+                            <div class="tm-url-row">
+                                <input type="text" class="tm-url-input" id="pkModelUrl" placeholder="https://teachablemachine.withgoogle.com/models/XXXXX/" value="">
+                                <button class="btn-tm" id="btnPkTmStart">
+                                    <i class="fa-solid fa-play" id="pkTmIcon"></i>
+                                    <span id="btnPkTmText">Mulai</span>
+                                </button>
+                            </div>
+                            <div class="tm-hint">
+                                <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>
+                                Web mengirim <strong>nama kelas</strong> hasil deteksi ke Micro:bit persis seperti yang kamu tulis di Teachable Machine (misalnya <strong>mobil</strong> atau <strong>kosong</strong>). Data hanya dikirim jika keyakinan minimal <strong>85%</strong> dan kelasnya berbeda dari yang terakhir dikirim.
+                            </div>
+                        </div>
+
+                        <div class="tm-preview-row">
+                            <div class="tm-webcam-box">
+                                <div class="tm-webcam-title">
+                                    <i class="fa-solid fa-video" style="color: var(--primary);"></i>
+                                    Preview Kamera
+                                </div>
+                                <div id="pk-webcam-container">
+                                    <div class="tm-placeholder">Kamera belum aktif</div>
+                                </div>
+                                <div class="tm-status-line">
+                                    <div class="tm-status-dot" id="pkTmStatusDot"></div>
+                                    <span id="pkTmStatusText">Siap</span>
+                                </div>
+                            </div>
+
+                            <div class="tm-predictions-box">
+                                <div class="tm-pred-title">
+                                    <i class="fa-solid fa-chart-bar" style="color: var(--accent-green);"></i>
+                                    Hasil Prediksi
+                                </div>
+                                <div id="pk-label-container">
+                                    <div class="tm-placeholder">Belum ada model yang dimuat</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-title">
                         <i class="fa-solid fa-road-barrier" style="color: var(--accent-yellow);"></i>
                         Kontrol Palang Parkir
                     </div>
@@ -1544,6 +1621,11 @@
                 // Auto-stop Teachable Machine when leaving its section
                 if (target !== 'tm-section' && typeof tmRunning !== 'undefined' && tmRunning) {
                     stopTeachableMachine();
+                }
+
+                // Auto-stop kamera Smart Parking saat meninggalkan section-nya
+                if (target !== 'parking-section' && typeof pkTmRunning !== 'undefined' && pkTmRunning) {
+                    stopParkingCamera();
                 }
 
                 navItems.forEach(n => n.classList.remove('active'));
@@ -2006,6 +2088,187 @@
             document.getElementById('pkTotalCount').textContent = PARKING_SLOT_COUNT;
             document.getElementById('pkOccupiedCount').textContent = occupied;
             document.getElementById('pkFreeCount').textContent = PARKING_SLOT_COUNT - occupied;
+        }
+
+        // --- Kamera Teachable Machine untuk deteksi mobil ---
+        const PK_CONFIDENCE_THRESHOLD = 0.85; // kirim hanya jika keyakinan >= 85%
+
+        let pkModel = null;
+        let pkWebcam = null;
+        let pkMaxPredictions = 0;
+        let pkTmRunning = false;
+        let pkLastSentClass = null;
+        let pkAnimationId = null;
+        let pkWarnedNoBle = false;
+
+        const btnPkTmStart = document.getElementById('btnPkTmStart');
+        const btnPkTmText = document.getElementById('btnPkTmText');
+        const pkTmIcon = document.getElementById('pkTmIcon');
+        const pkModelUrlInput = document.getElementById('pkModelUrl');
+        const pkWebcamContainer = document.getElementById('pk-webcam-container');
+        const pkLabelContainer = document.getElementById('pk-label-container');
+        const pkTmStatusDot = document.getElementById('pkTmStatusDot');
+        const pkTmStatusText = document.getElementById('pkTmStatusText');
+
+        btnPkTmStart.addEventListener('click', async () => {
+            if (pkTmRunning) {
+                stopParkingCamera();
+            } else {
+                await startParkingCamera();
+            }
+        });
+
+        function resetParkingCameraUI() {
+            btnPkTmStart.disabled = false;
+            btnPkTmStart.classList.remove('stop');
+            pkTmIcon.className = 'fa-solid fa-play';
+            btnPkTmText.innerText = 'Mulai';
+            pkTmStatusDot.classList.remove('active');
+        }
+
+        async function startParkingCamera() {
+            let url = pkModelUrlInput.value.trim();
+            if (!url) {
+                addLog('Masukkan link model Teachable Machine untuk Smart Parking terlebih dahulu.', 'warn');
+                return;
+            }
+
+            // Normalisasi URL agar selalu diakhiri /
+            if (!url.endsWith('/')) url += '/';
+
+            try {
+                btnPkTmStart.disabled = true;
+                btnPkTmText.innerText = 'Memuat...';
+                pkTmStatusText.innerText = 'Memuat model...';
+                addLog(`Smart Parking: memuat model dari ${url}`, 'info');
+
+                pkModel = await tmImage.load(url + 'model.json', url + 'metadata.json');
+                pkMaxPredictions = pkModel.getTotalClasses();
+                addLog(`Smart Parking: model berhasil dimuat (${pkMaxPredictions} kelas).`, 'info');
+
+                pkWebcam = new tmImage.Webcam(280, 280, true);
+                await pkWebcam.setup(); // minta akses kamera
+                await pkWebcam.play();
+
+                // Jika user sudah pindah menu saat kamera dimuat, matikan lagi
+                if (!document.getElementById('parking-section').classList.contains('active')) {
+                    pkWebcam.stop();
+                    pkWebcam = null;
+                    pkModel = null;
+                    resetParkingCameraUI();
+                    pkTmStatusText.innerText = 'Dihentikan';
+                    return;
+                }
+
+                pkWebcamContainer.innerHTML = '';
+                pkWebcamContainer.appendChild(pkWebcam.canvas);
+
+                pkLabelContainer.innerHTML = '';
+                for (let i = 0; i < pkMaxPredictions; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'tm-pred-item';
+                    item.innerHTML = `
+                        <div class="tm-pred-name">Class ${i}</div>
+                        <div class="tm-pred-bar-bg"><div class="tm-pred-bar" style="width:0%"></div></div>
+                        <div class="tm-pred-pct">0%</div>
+                    `;
+                    pkLabelContainer.appendChild(item);
+                }
+
+                pkTmRunning = true;
+                pkLastSentClass = null;
+                pkWarnedNoBle = false;
+
+                btnPkTmStart.disabled = false;
+                btnPkTmStart.classList.add('stop');
+                pkTmIcon.className = 'fa-solid fa-stop';
+                btnPkTmText.innerText = 'Stop';
+                pkTmStatusDot.classList.add('active');
+                pkTmStatusText.innerText = 'Berjalan – deteksi aktif';
+
+                addLog('Smart Parking: kamera aktif, deteksi mobil dimulai.', 'info');
+                pkLoop();
+
+            } catch (err) {
+                if (pkWebcam) {
+                    try { pkWebcam.stop(); } catch (e) {}
+                    pkWebcam = null;
+                }
+                pkModel = null;
+                addLog(`Smart Parking: gagal memuat model / kamera: ${err.message}`, 'error');
+                resetParkingCameraUI();
+                pkTmStatusText.innerText = 'Gagal';
+            }
+        }
+
+        function stopParkingCamera() {
+            pkTmRunning = false;
+            if (pkAnimationId) {
+                cancelAnimationFrame(pkAnimationId);
+                pkAnimationId = null;
+            }
+            if (pkWebcam) {
+                pkWebcam.stop();
+                pkWebcam = null;
+            }
+            pkModel = null;
+            pkLastSentClass = null;
+            pkWarnedNoBle = false;
+
+            pkWebcamContainer.innerHTML = '<div class="tm-placeholder">Kamera dimatikan</div>';
+            pkLabelContainer.innerHTML = '<div class="tm-placeholder">Model dihentikan</div>';
+
+            resetParkingCameraUI();
+            pkTmStatusText.innerText = 'Dihentikan';
+
+            addLog('Smart Parking: kamera dihentikan.', 'info');
+        }
+
+        async function pkLoop() {
+            if (!pkTmRunning) return;
+            pkWebcam.update();
+            await pkPredict();
+            if (!pkTmRunning) return;
+            pkAnimationId = requestAnimationFrame(pkLoop);
+        }
+
+        async function pkPredict() {
+            if (!pkModel || !pkWebcam) return;
+
+            const prediction = await pkModel.predict(pkWebcam.canvas);
+            if (!pkTmRunning) return;
+
+            // Urutkan descending berdasarkan probability
+            const sorted = prediction
+                .map((p, idx) => ({ ...p, idx }))
+                .sort((a, b) => b.probability - a.probability);
+
+            const items = pkLabelContainer.querySelectorAll('.tm-pred-item');
+            sorted.forEach((p, rank) => {
+                const item = items[rank];
+                if (!item) return;
+                const pct = (p.probability * 100).toFixed(1);
+                item.querySelector('.tm-pred-name').textContent = p.className;
+                item.querySelector('.tm-pred-bar').style.width = pct + '%';
+                item.querySelector('.tm-pred-pct').textContent = pct + '%';
+                item.classList.toggle('top', rank === 0);
+            });
+
+            // Kirim nama kelas terbaik hanya jika keyakinan >= 85% DAN berbeda dari yang terakhir dikirim
+            const top = sorted[0];
+            if (top && top.probability >= PK_CONFIDENCE_THRESHOLD && top.className !== pkLastSentClass) {
+                if (!rxCharacteristic) {
+                    // Belum terhubung: jangan tandai sebagai terkirim, kirim otomatis setelah terhubung
+                    if (!pkWarnedNoBle) {
+                        pkWarnedNoBle = true;
+                        addLog(`Smart Parking: terdeteksi "${top.className}", tapi Bluetooth belum terhubung. Klik Hubungkan dulu.`, 'warn');
+                    }
+                    return;
+                }
+                pkWarnedNoBle = false;
+                pkLastSentClass = top.className;
+                sendData(top.className);
+            }
         }
 
         document.getElementById('btnPkOpen').addEventListener('click', () => sendData('mobil'));
