@@ -520,25 +520,6 @@
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
-        /* --- TOMBOL AKSI (CAPIT / LEPAS) --- */
-        .dpad-action-row {
-            width: 260px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .dpad-btn.action-btn {
-            height: 56px;
-            font-size: 15px;
-            font-weight: 700;
-            gap: 8px;
-        }
-
-        .dpad-btn.action-btn i {
-            font-size: 16px;
-        }
-
         /* --- TEACHABLE MACHINE SECTION --- */
         .tm-container {
             display: flex;
@@ -778,158 +759,177 @@
             padding: 12px 14px;
         }
 
-        /* --- SWITCH THRESHOLD TEACHABLE MACHINE --- */
-        .tm-switch-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 14px 16px;
-            cursor: pointer;
-        }
-
-        .tm-switch-text {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .tm-switch-title {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .tm-switch-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        .switch {
-            position: relative;
-            width: 46px;
-            height: 26px;
-            flex-shrink: 0;
-        }
-
-        .switch input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        .switch-slider {
-            position: absolute;
-            inset: 0;
-            background-color: var(--bg-card-hover);
-            border-radius: 20px;
-            transition: background-color 0.2s ease;
-            pointer-events: none;
-        }
-
-        .switch-slider::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            left: 3px;
-            top: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: transform 0.2s ease;
-        }
-
-        .switch input:checked + .switch-slider {
-            background-color: var(--accent-green);
-        }
-
-        .switch input:checked + .switch-slider::before {
-            transform: translateX(20px);
-        }
-
-        .switch input:focus-visible + .switch-slider {
-            box-shadow: 0 0 0 3px var(--primary-glow);
-        }
-
-        /* --- PENGATURAN PERINTAH SECTION --- */
-        .cmd-container {
-            display: flex;
-            flex-direction: column;
+        /* --- SMART PARKING SECTION --- */
+        .pk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            max-width: 720px;
         }
 
-        .cmd-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .icon-park-total { background: rgba(59, 130, 246, 0.15); color: var(--primary); }
+        .icon-park-used { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+        .icon-park-free { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+        .pk-slot {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
         }
 
-        .cmd-row {
+        .pk-slot.free { border-color: rgba(16, 185, 129, 0.35); }
+        .pk-slot.occupied { border-color: rgba(239, 68, 68, 0.45); }
+
+        .pk-slot-top {
+            padding: 18px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 14px 16px;
         }
 
-        .cmd-name {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
+        .pk-slot-name {
+            font-size: 16px;
             font-weight: 700;
         }
 
-        .cmd-name i {
-            width: 20px;
-            text-align: center;
-            color: var(--primary);
-        }
-
-        .cmd-default {
+        .pk-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            color: var(--text-dim);
-            font-weight: 500;
+            font-weight: 700;
+            transition: all 0.3s ease;
         }
 
-        .cmd-input {
-            width: 220px;
-            max-width: 100%;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: var(--text-main);
-            font-size: 14px;
-            font-family: 'Courier New', Courier, monospace;
-            outline: none;
-            transition: border-color 0.2s ease;
-            user-select: text;
+        .pk-slot.free .pk-badge {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
         }
 
-        .cmd-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow);
+        .pk-slot.occupied .pk-badge {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
         }
 
-        .cmd-input::placeholder {
-            color: var(--text-dim);
-        }
-
-        .cmd-actions {
+        .pk-visual {
+            height: 190px;
+            margin: 0 20px 18px;
+            border-radius: 12px;
             display: flex;
-            justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .pk-slot.free .pk-visual {
+            background-color: rgba(16, 185, 129, 0.07);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .pk-slot.occupied .pk-visual {
+            background-color: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.6);
+        }
+
+        .pk-car {
+            width: 90px;
+            height: 145px;
+            position: relative;
+            display: none;
+        }
+
+        .pk-slot.occupied .pk-car {
+            display: block;
+            animation: pkCarIn 0.35s ease;
+        }
+
+        @keyframes pkCarIn {
+            from { opacity: 0; transform: translateY(-14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pk-car-body {
+            width: 70px;
+            height: 130px;
+            background-color: #f87171;
+            border: 3px solid #fecaca;
+            border-radius: 20px 20px 12px 12px;
+            position: absolute;
+            left: 10px;
+            top: 7px;
+        }
+
+        .pk-car-window {
+            width: 49px;
+            height: 35px;
+            background-color: #172554;
+            border-radius: 9px;
+            position: absolute;
+            left: 20px;
+            top: 28px;
+        }
+
+        .pk-car-window.back { top: 82px; }
+
+        .pk-wheel {
+            width: 9px;
+            height: 29px;
+            background-color: #0f172a;
+            position: absolute;
+        }
+
+        .pk-wheel.left { left: 0; }
+        .pk-wheel.right { right: 0; }
+        .pk-wheel.one { top: 28px; }
+        .pk-wheel.two { bottom: 28px; }
+
+        .pk-slot-info {
+            padding: 0 20px 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .pk-slot-info strong {
+            color: var(--text-main);
+        }
+
+        .pk-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-pk {
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-pk:hover { transform: translateY(-1px); }
+
+        .btn-pk.open {
+            background: linear-gradient(135deg, var(--accent-green), #047857);
+            box-shadow: 0 4px 12px var(--accent-green-glow);
+        }
+
+        .btn-pk.close {
+            background: linear-gradient(135deg, var(--accent-yellow), #b45309);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pk-slot.occupied .pk-car { animation: none; }
         }
 
         /* --- RIGHT NOTIFICATION / SYSTEM LOG PANEL --- */
@@ -1158,9 +1158,9 @@
                     <i class="fa-solid fa-brain"></i>
                     <span>Teachable Machine</span>
                 </div>
-                <div class="nav-item" data-target="cmd-section">
-                    <i class="fa-solid fa-sliders"></i>
-                    <span>Pengaturan Perintah</span>
+                <div class="nav-item" data-target="parking-section">
+                    <i class="fa-solid fa-square-parking"></i>
+                    <span>Smart Parking</span>
                 </div>
             </div>
 
@@ -1277,11 +1277,6 @@
                         <button class="dpad-btn" id="btn-right"><i class="fa-solid fa-chevron-right"></i></button>
                         <button class="dpad-btn" id="btn-down"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
-
-                    <div class="dpad-action-row">
-                        <button class="dpad-btn action-btn" id="btn-capit"><i class="fa-solid fa-hand-fist"></i><span>Capit</span></button>
-                        <button class="dpad-btn action-btn" id="btn-lepas"><i class="fa-solid fa-hand"></i><span>Lepas</span></button>
-                    </div>
                 </div>
             </section>
 
@@ -1307,17 +1302,6 @@
                             Export model di Teachable Machine → pilih <strong>Tensorflow.js</strong> → Upload my model → salin link (contoh: https://teachablemachine.withgoogle.com/models/Jgyr546VH/). Pastikan browser mengizinkan akses kamera.
                         </div>
                     </div>
-
-                    <label class="tm-switch-row" for="tmThresholdToggle">
-                        <div class="tm-switch-text">
-                            <span class="tm-switch-title">Batas Keyakinan 85%</span>
-                            <span class="tm-switch-desc" id="tmThresholdDesc"></span>
-                        </div>
-                        <div class="switch">
-                            <input type="checkbox" id="tmThresholdToggle" checked>
-                            <span class="switch-slider"></span>
-                        </div>
-                    </label>
 
                     <div class="tm-preview-row">
                         <div class="tm-webcam-box">
@@ -1347,69 +1331,139 @@
                 </div>
             </section>
 
-            <!-- SECTION 4: PENGATURAN PERINTAH -->
-            <section id="cmd-section" class="view-section">
+            <!-- SECTION 4: SMART PARKING -->
+            <section id="parking-section" class="view-section">
                 <div class="section-header">
-                    <h1 class="section-title">Pengaturan Perintah</h1>
-                    <p class="section-subtitle">Ubah data yang dikirim ke Micro:bit saat tombol ditekan. Kosongkan kolom untuk kembali ke data default.</p>
+                    <h1 class="section-title">Smart Parking</h1>
+                    <p class="section-subtitle">Pantau tiga slot parkir secara real-time dan kontrol palang parkir lewat Micro:bit.</p>
                 </div>
 
-                <div class="cmd-container">
-                    <div class="cmd-list">
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-chevron-up"></i>
-                                <span>Maju <span class="cmd-default">(default: up)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="up" data-label="Maju" placeholder="up" maxlength="18" autocomplete="off" spellcheck="false">
+                <div class="dashboard-grid">
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <span class="widget-title">Total Parkiran</span>
+                            <div class="widget-icon icon-park-total"><i class="fa-solid fa-square-parking"></i></div>
                         </div>
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-chevron-down"></i>
-                                <span>Mundur <span class="cmd-default">(default: down)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="down" data-label="Mundur" placeholder="down" maxlength="18" autocomplete="off" spellcheck="false">
-                        </div>
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-chevron-left"></i>
-                                <span>Kiri <span class="cmd-default">(default: left)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="left" data-label="Kiri" placeholder="left" maxlength="18" autocomplete="off" spellcheck="false">
-                        </div>
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-chevron-right"></i>
-                                <span>Kanan <span class="cmd-default">(default: right)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="right" data-label="Kanan" placeholder="right" maxlength="18" autocomplete="off" spellcheck="false">
-                        </div>
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-hand-fist"></i>
-                                <span>Capit <span class="cmd-default">(default: capit)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="capit" data-label="Capit" placeholder="capit" maxlength="18" autocomplete="off" spellcheck="false">
-                        </div>
-                        <div class="cmd-row">
-                            <div class="cmd-name">
-                                <i class="fa-solid fa-hand"></i>
-                                <span>Lepas <span class="cmd-default">(default: lepas)</span></span>
-                            </div>
-                            <input type="text" class="cmd-input" data-key="lepas" data-label="Lepas" placeholder="lepas" maxlength="18" autocomplete="off" spellcheck="false">
+                        <div class="widget-value-container">
+                            <span class="widget-value" id="pkTotalCount">3</span>
+                            <span class="widget-unit">slot</span>
                         </div>
                     </div>
 
-                    <div class="cmd-actions">
-                        <button class="btn-tm" id="btnCmdReset">
-                            <i class="fa-solid fa-rotate-left"></i>
-                            <span>Reset ke Default</span>
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <span class="widget-title">Parkiran Terisi</span>
+                            <div class="widget-icon icon-park-used"><i class="fa-solid fa-car"></i></div>
+                        </div>
+                        <div class="widget-value-container">
+                            <span class="widget-value" id="pkOccupiedCount">0</span>
+                            <span class="widget-unit">slot</span>
+                        </div>
+                    </div>
+
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <span class="widget-title">Parkiran Kosong</span>
+                            <div class="widget-icon icon-park-free"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div class="widget-value-container">
+                            <span class="widget-value" id="pkFreeCount">3</span>
+                            <span class="widget-unit">slot</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box" style="margin-top: 0;">
+                    <div class="panel-box-title">
+                        <i class="fa-solid fa-car-side" style="color: var(--primary);"></i>
+                        Status Parkiran
+                    </div>
+                    <div class="pk-grid">
+                    <div class="pk-slot free" id="pkSlot1">
+                        <div class="pk-slot-top">
+                            <div class="pk-slot-name">Parkiran 1</div>
+                            <div class="pk-badge" id="pkBadge1">KOSONG</div>
+                        </div>
+                        <div class="pk-visual">
+                            <div class="pk-car">
+                                <div class="pk-car-body"></div>
+                                <div class="pk-car-window"></div>
+                                <div class="pk-car-window back"></div>
+                                <div class="pk-wheel left one"></div>
+                                <div class="pk-wheel right one"></div>
+                                <div class="pk-wheel left two"></div>
+                                <div class="pk-wheel right two"></div>
+                            </div>
+                        </div>
+                        <div class="pk-slot-info">
+                            Sensor: <strong>P0</strong><br>
+                            Status: <strong id="pkStatus1">Tidak ada mobil</strong>
+                        </div>
+                    </div>
+                    <div class="pk-slot free" id="pkSlot2">
+                        <div class="pk-slot-top">
+                            <div class="pk-slot-name">Parkiran 2</div>
+                            <div class="pk-badge" id="pkBadge2">KOSONG</div>
+                        </div>
+                        <div class="pk-visual">
+                            <div class="pk-car">
+                                <div class="pk-car-body"></div>
+                                <div class="pk-car-window"></div>
+                                <div class="pk-car-window back"></div>
+                                <div class="pk-wheel left one"></div>
+                                <div class="pk-wheel right one"></div>
+                                <div class="pk-wheel left two"></div>
+                                <div class="pk-wheel right two"></div>
+                            </div>
+                        </div>
+                        <div class="pk-slot-info">
+                            Sensor: <strong>P1</strong><br>
+                            Status: <strong id="pkStatus2">Tidak ada mobil</strong>
+                        </div>
+                    </div>
+                    <div class="pk-slot free" id="pkSlot3">
+                        <div class="pk-slot-top">
+                            <div class="pk-slot-name">Parkiran 3</div>
+                            <div class="pk-badge" id="pkBadge3">KOSONG</div>
+                        </div>
+                        <div class="pk-visual">
+                            <div class="pk-car">
+                                <div class="pk-car-body"></div>
+                                <div class="pk-car-window"></div>
+                                <div class="pk-car-window back"></div>
+                                <div class="pk-wheel left one"></div>
+                                <div class="pk-wheel right one"></div>
+                                <div class="pk-wheel left two"></div>
+                                <div class="pk-wheel right two"></div>
+                            </div>
+                        </div>
+                        <div class="pk-slot-info">
+                            Sensor: <strong>P2</strong><br>
+                            Status: <strong id="pkStatus3">Tidak ada mobil</strong>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-title">
+                        <i class="fa-solid fa-road-barrier" style="color: var(--accent-yellow);"></i>
+                        Kontrol Palang Parkir
+                    </div>
+                    <p class="section-subtitle" style="margin-bottom: 16px;">Kirim perintah ke Micro:bit untuk membuka atau menutup palang.</p>
+                    <div class="pk-controls">
+                        <button class="btn-pk open" id="btnPkOpen">
+                            <i class="fa-solid fa-lock-open"></i>
+                            Buka Palang
+                        </button>
+                        <button class="btn-pk close" id="btnPkClose">
+                            <i class="fa-solid fa-lock"></i>
+                            Tutup Palang
                         </button>
                     </div>
-
-                    <div class="tm-hint">
+                    <div class="tm-hint" style="margin-top: 16px;">
                         <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>
-                        Perubahan langsung dipakai dan tersimpan di browser ini. Data "stop" yang dikirim saat tombol arah dilepas tidak berubah. Maksimal 18 karakter agar muat dalam satu paket Bluetooth Micro:bit.
+                        Micro:bit mengirim <strong>masuk1</strong>, <strong>masuk2</strong>, <strong>masuk3</strong> saat mobil masuk dan <strong>keluar1</strong>, <strong>keluar2</strong>, <strong>keluar3</strong> saat mobil keluar (satu pesan per baris). Tombol di atas mengirim perintah <strong>mobil</strong> (buka) dan <strong>kosong</strong> (tutup). Semua data tercatat di System Activity Log.
                     </div>
                 </div>
             </section>
@@ -1587,16 +1641,38 @@
             btnText.innerText = 'Hubungkan';
             connectBtn.classList.remove('disconnect');
             rxCharacteristic = null;
+            rxBuffer = '';
         }
 
         // Handle Incoming Telemetry Data
-        function handleIncomingData(event) {
-            const value = event.target.value;
-            const decoder = new TextDecoder('utf-8');
-            const data = decoder.decode(value).trim();
+        // Buffer agar pesan yang terpotong antar paket Bluetooth tetap utuh
+        let rxBuffer = '';
+        const PARTIAL_PARKING_MSG = /^(m|ma|mas|masu|masuk|k|ke|kel|kelu|kelua|keluar)$/i;
+        const rxDecoder = new TextDecoder('utf-8');
 
-            addLog(data, 'rx');
-            parseTelemetry(data);
+        function handleIncomingData(event) {
+            rxBuffer += rxDecoder.decode(event.target.value);
+
+            const lines = rxBuffer.split(/\r?\n/);
+            rxBuffer = lines.pop();
+
+            // Sisa tanpa newline langsung diproses, kecuali baru separuh kata "masuk"/"keluar"
+            if (rxBuffer && !PARTIAL_PARKING_MSG.test(rxBuffer.trim())) {
+                lines.push(rxBuffer);
+                rxBuffer = '';
+            }
+
+            lines.forEach(line => {
+                const data = line.trim();
+                if (!data) return;
+
+                addLog(data, 'rx');
+
+                // Pesan parkir (masuk1, keluar2, dst.) ditangani terpisah dari telemetri
+                if (!handleParkingMessage(data)) {
+                    parseTelemetry(data);
+                }
+            });
         }
 
         // Send Data to Micro:bit
@@ -1695,106 +1771,6 @@
             }
         }
 
-        // ============================================================
-        // PENGATURAN: PERINTAH KUSTOM & TOGGLE THRESHOLD
-        // ============================================================
-        const DEFAULT_COMMANDS = {
-            up: 'up',
-            down: 'down',
-            left: 'left',
-            right: 'right',
-            capit: 'capit',
-            lepas: 'lepas'
-        };
-        const SETTINGS_KEY = 'microbitWebSettings';
-
-        let customCommands = { ...DEFAULT_COMMANDS };
-        let tmThresholdEnabled = true; // true = kirim hanya jika confidence >= 85%
-
-        const cmdInputs = document.querySelectorAll('.cmd-input');
-        const btnCmdReset = document.getElementById('btnCmdReset');
-        const tmThresholdToggle = document.getElementById('tmThresholdToggle');
-        const tmThresholdDesc = document.getElementById('tmThresholdDesc');
-
-        function loadSettings() {
-            try {
-                const raw = localStorage.getItem(SETTINGS_KEY);
-                if (!raw) return;
-                const saved = JSON.parse(raw);
-                if (saved.commands) {
-                    Object.keys(DEFAULT_COMMANDS).forEach(key => {
-                        const v = saved.commands[key];
-                        if (typeof v === 'string' && v.trim()) customCommands[key] = v.trim();
-                    });
-                }
-                if (typeof saved.thresholdEnabled === 'boolean') {
-                    tmThresholdEnabled = saved.thresholdEnabled;
-                }
-            } catch (e) {
-                // Penyimpanan tidak tersedia / data rusak: pakai nilai default
-            }
-        }
-
-        function saveSettings() {
-            try {
-                localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-                    commands: customCommands,
-                    thresholdEnabled: tmThresholdEnabled
-                }));
-            } catch (e) {
-                // Abaikan jika penyimpanan tidak tersedia
-            }
-        }
-
-        // Ambil data yang akan dikirim untuk sebuah tombol (kosong = default)
-        function getCommand(key) {
-            return customCommands[key] || DEFAULT_COMMANDS[key];
-        }
-
-        function updateThresholdDesc() {
-            tmThresholdDesc.innerText = tmThresholdEnabled
-                ? 'Aktif: data hanya dikirim jika keyakinan prediksi 85% atau lebih.'
-                : 'Nonaktif: data dikirim setiap kali kelas teratas berubah, berapa pun keyakinannya.';
-        }
-
-        loadSettings();
-
-        // Isi input perintah dengan nilai tersimpan
-        cmdInputs.forEach(input => {
-            const key = input.dataset.key;
-            input.value = getCommand(key);
-
-            // Langsung dipakai saat mengetik
-            input.addEventListener('input', () => {
-                customCommands[key] = input.value.trim() || DEFAULT_COMMANDS[key];
-                saveSettings();
-            });
-
-            // Catat ke log saat selesai mengubah
-            input.addEventListener('change', () => {
-                if (!input.value.trim()) input.value = DEFAULT_COMMANDS[key];
-                addLog(`Perintah tombol ${input.dataset.label} diubah menjadi: ${getCommand(key)}`, 'info');
-            });
-        });
-
-        btnCmdReset.addEventListener('click', () => {
-            customCommands = { ...DEFAULT_COMMANDS };
-            cmdInputs.forEach(input => { input.value = DEFAULT_COMMANDS[input.dataset.key]; });
-            saveSettings();
-            addLog('Semua perintah dikembalikan ke default.', 'info');
-        });
-
-        // Toggle threshold Teachable Machine
-        tmThresholdToggle.checked = tmThresholdEnabled;
-        updateThresholdDesc();
-
-        tmThresholdToggle.addEventListener('change', () => {
-            tmThresholdEnabled = tmThresholdToggle.checked;
-            updateThresholdDesc();
-            saveSettings();
-            addLog(`Batas keyakinan 85% ${tmThresholdEnabled ? 'diaktifkan' : 'dinonaktifkan'}.`, 'info');
-        });
-
         // --- D-PAD LOGIC (TOUCH / CLICK ONLY) ---
         const dpadButtons = [
             { id: 'btn-up', command: 'up' },
@@ -1812,7 +1788,7 @@
                 if (activeDirection !== btn.command) {
                     activeDirection = btn.command;
                     el.classList.add('active-key');
-                    sendData(getCommand(btn.command));
+                    sendData(btn.command);
                 }
             };
 
@@ -1832,18 +1808,6 @@
             // Touch Events
             el.addEventListener('touchstart', (e) => { e.preventDefault(); handlePress(); });
             el.addEventListener('touchend', (e) => { e.preventDefault(); handleRelease(); });
-        });
-
-        // --- TOMBOL CAPIT / LEPAS ---
-        // Hanya mengirim data saat diklik. Saat dilepas tidak mengirim apa pun.
-        // Data "lepas" baru terkirim jika tombol Lepas diklik (dan sebaliknya).
-        [
-            { id: 'btn-capit', command: 'capit' },
-            { id: 'btn-lepas', command: 'lepas' }
-        ].forEach(btn => {
-            document.getElementById(btn.id).addEventListener('click', () => {
-                sendData(getCommand(btn.command));
-            });
         });
 
         // ============================================================
@@ -1996,9 +1960,8 @@
 
             // Kirim class terbaik hanya jika confidence >= 85% DAN berbeda dari terakhir
             // Jika di bawah 85% maka tidak mengirim apa pun (tetap pada data sebelumnya)
-            // Jika threshold dimatikan lewat toggle, batas 85% diabaikan (tetap hanya kirim jika berbeda dari terakhir)
             const top = sorted[0];
-            if (top && (!tmThresholdEnabled || top.probability >= TM_CONFIDENCE_THRESHOLD)) {
+            if (top && top.probability >= TM_CONFIDENCE_THRESHOLD) {
                 if (top.className !== tmLastSentClass) {
                     tmLastSentClass = top.className;
                     sendData(top.className);
@@ -2006,6 +1969,49 @@
             }
             // Jika di bawah threshold: tidak mengubah tmLastSentClass dan tidak mengirim data
         }
+
+        // ============================================================
+        // SMART PARKING
+        // ============================================================
+        const PARKING_SLOT_COUNT = 3;
+        const parkingStatus = { 1: false, 2: false, 3: false };
+
+        // Format dari micro:bit: masuk1, masuk2, masuk3, keluar1, keluar2, keluar3
+        function handleParkingMessage(msg) {
+            const match = msg.match(/^(masuk|keluar)\s*([123])$/i);
+            if (!match) return false;
+
+            const occupied = match[1].toLowerCase() === 'masuk';
+            setParkingStatus(match[2], occupied);
+            return true;
+        }
+
+        function setParkingStatus(number, occupied) {
+            parkingStatus[number] = occupied;
+
+            const slot = document.getElementById('pkSlot' + number);
+            const badge = document.getElementById('pkBadge' + number);
+            const status = document.getElementById('pkStatus' + number);
+
+            slot.classList.toggle('occupied', occupied);
+            slot.classList.toggle('free', !occupied);
+            badge.textContent = occupied ? 'TERISI' : 'KOSONG';
+            status.textContent = occupied ? 'Ada mobil' : 'Tidak ada mobil';
+
+            updateParkingStats();
+        }
+
+        function updateParkingStats() {
+            const occupied = Object.values(parkingStatus).filter(Boolean).length;
+            document.getElementById('pkTotalCount').textContent = PARKING_SLOT_COUNT;
+            document.getElementById('pkOccupiedCount').textContent = occupied;
+            document.getElementById('pkFreeCount').textContent = PARKING_SLOT_COUNT - occupied;
+        }
+
+        document.getElementById('btnPkOpen').addEventListener('click', () => sendData('mobil'));
+        document.getElementById('btnPkClose').addEventListener('click', () => sendData('kosong'));
+
+        updateParkingStats();
     </script>
 </body>
 </html>
